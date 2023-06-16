@@ -129,10 +129,26 @@ function App() {
                 link.setAttribute('download', 'products.csv'); // Change the file name as per your requirement
                 link.style.visibility = 'hidden';
                 document.body.appendChild(link);
+
+                const updateProgress = (event: any) => {
+                    const percent = Math.round((event.loaded / event.total) * 100);
+                    setProgress((prevState) => ({
+                        ...prevState,
+                        count: percent, // Update the count based on progress percentage
+                    }));
+                };
+                link.addEventListener('progress', updateProgress);
+
                 link.click();
+
                 document.body.removeChild(link);
+                link.removeEventListener('progress', updateProgress);
 
                 console.log('CSV file downloaded successfully');
+                setProgress((prevState) => ({
+                    ...prevState,
+                    count: 100, // Set the count to 100 to indicate completion
+                }));
             }
         } catch (error) {
             console.error('Error downloading CSV:', error);
@@ -218,7 +234,7 @@ function App() {
                                 .toLowerCase()
                                 .localeCompare((optionB?.label ?? '').toLowerCase())
                         }
-                        onChange={(v) => console.log(v)}
+                        onChange={(v) => setCategoryId(v)}
                         options={categories}
                     />
                 </div>
